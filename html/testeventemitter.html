@@ -1,0 +1,98 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+  <title>Test server side event emitter</title>
+  <style>
+
+  /* The switch - the box around the slider */
+  .switch {
+    position: relative;
+    display: inline-block;
+    width: 60px;
+    height: 34px;
+  }
+
+  /* The slider */
+  .slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #ccc;
+    -webkit-transition: .4s;
+    transition: .4s;
+  }
+
+  .slider:before {
+    position: absolute;
+    content: "";
+    height: 26px;
+    width: 26px;
+    left: 4px;
+    bottom: 4px;
+    background-color: white;
+    -webkit-transition: .4s;
+    transition: .4s;
+  }
+
+  input:checked + .slider {
+    background-color: #76fc8a;
+  }
+
+  input:focus + .slider {
+    box-shadow: 0 0 1px #76fc8a;
+  }
+
+  input:checked + .slider:before {
+    -webkit-transform: translateX(26px);
+    -ms-transform: translateX(26px);
+    transform: translateX(26px);
+  }
+
+  /* Rounded sliders */
+  .slider.round {
+    border-radius: 34px;
+  }
+
+  .slider.round:before {
+    border-radius: 50%;
+  }
+  </style>
+</head>
+<body>
+
+  <div align="center" style="margin-top:200px;">
+    <span>IoT toggle switch</span><br>
+    <span>with server-side event emitter</span><br>
+    <label class="switch" style="margin-top:10px;">
+      <input id="toggle_switch" type="checkbox">
+      <span class="slider round"></span>
+    </label>
+  </div>
+  <div align="center">
+    <span id="button_cnt_span" style="font-size:40px;"></span>
+  </div>
+
+  <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.9.0/jquery.min.js"></script>
+  <script>
+    var source = new EventSource("http://<SERVER-IP-ADDRESS>:3030/");
+    source.onmessage = function(e){
+      var buttoninfo = JSON.parse(e.data);
+      console.log(buttoninfo);
+      switch (true) {
+        case buttoninfo.buttonstatus == '0':
+          $('#toggle_switch').prop('checked', true);
+          break;
+        case buttoninfo.buttonstatus == '1':
+          $('#toggle_switch').prop('checked', false);
+          break;
+        default:
+          //..
+      }
+      $('#button_cnt_span').text(buttoninfo.buttoncnt);
+    }
+  </script>
+</body>
+</html>
